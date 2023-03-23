@@ -14,6 +14,14 @@ import re
 
 bp = Blueprint(name = "Routes")
 
+# https://peps.python.org/pep-0616/
+def removesuffix(string: str, suffix: str, /) -> str:
+    # suffix='' should not call self[:-0].
+    if suffix and string.endswith(suffix):
+        return string[:-len(suffix)]
+    else:
+        return string[:]
+
 
 @bp.get("/<region:str>/<model:str>/list")
 async def get_firmware_list(request : Request, region : str, model : str):
@@ -81,8 +89,8 @@ async def get_binary_details(request : Request, region: str, model: str, firmwar
     Use these values to start downloading the firmware file.
     """
     # Check if "/download" path has appended to firmware value.
-    is_download = firmware_path.removesuffix("/").endswith("/download")
-    firmware = firmware_path.removesuffix("/").removesuffix("/download")
+    is_download = removesuffix(firmware_path, "/").endswith("/download")
+    firmware = removesuffix(removesuffix(firmware_path, "/"), "/download")
     if not re.match(r"^[A-Z0-9]*/[A-Z0-9]*/[A-Z0-9]*/[A-Z0-9]*$", firmware):
         raise NotFound(f"Requested URL {request.path} not found")
     # Create new session.
