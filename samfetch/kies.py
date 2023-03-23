@@ -16,6 +16,13 @@ import httpx
 import string
 from samfetch.session import Session
 
+# https://peps.python.org/pep-0616/
+def removeprefix(string: str, prefix: str, /) -> str:
+    if string.startswith(prefix):
+        return string[len(prefix):]
+    else:
+        return string[:]
+
 
 class KiesFirmwareList:
     """
@@ -255,7 +262,7 @@ class KiesUtils:
     @staticmethod
     def parse_range_header(header: str) -> Tuple[int, int]:
         # Remove "bytes=" prefix.
-        ran = header.strip().removeprefix("bytes=").split("-", maxsplit = 1)
+        ran = removeprefix(header.strip(), "bytes=").split("-", maxsplit = 1)
         # Get range.
         if len(ran) != 2:
             return -1, -1
