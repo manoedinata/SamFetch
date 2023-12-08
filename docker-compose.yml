@@ -3,4 +3,4 @@ services:
   samfetch:
     build: .
     ports:
-      - 8080:8080
+      - 14120:8080
